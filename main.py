@@ -170,4 +170,26 @@ while running:
         player_speed = 0
         restart_timer -= 1
         window.blit(game_over_text, (WIDTH / 2 - game_over_text.get_width() / 2, HEIGHT / 2))
-        window.blit(restart_over_text, (WIDTH / 2 - restart_over_text.get_width() /
+        window.blit(restart_over_text, (WIDTH / 2 - restart_over_text.get_width() / 2, HEIGHT / 2 + 100))
+        if restart_timer <= 0:
+            reset_game()
+            restart_timer = max_restart_timer
+        
+
+    # Draw health bar
+    draw_health_bar(window, 10, 10, 200, 20, player_health, player_max_health)
+
+    enemy_spawner()
+
+    # Display the score
+
+    score_text = font.render(str(score), True, BLACK)
+    if player_health > min_health:
+        window.blit(score_text, (100, 100))
+
+    # Update the display
+    pygame.display.flip()
+
+# Quit Pygame
+pygame.quit()
+sys.exit()
