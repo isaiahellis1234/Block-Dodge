@@ -24,8 +24,8 @@ GREEN = (0, 255, 0)
 # Player settings
 player_size = 50
 player_speed = 5
-player_x = 100
-player_y = 100
+player_x = WIDTH // 2
+player_y = HEIGHT // 2
 BULLET_SPD = 3
 
 timer = 0
@@ -36,11 +36,24 @@ player_health = 100
 player_max_health = 100
 blocks = []
 
+#POWER UPS
+spd_pwu = [] # SPEED POWERUP
+
+PLAYERSPD = 5
+
 spawn_enemies = True
+
+max_restart_timer = 200
+restart_timer = max_restart_timer
+
+min_health = 90
 
 # Function to reset the game state
 def reset_game():
+    global player_speed
+    global spawn_enemies
     global player_x, player_y, player_health, score, blocks
+    player_speed = 5
     player_x = WIDTH // 2
     player_y = HEIGHT // 2
     player_health = player_max_health
@@ -107,11 +120,15 @@ while running:
             elif event.key == pygame.K_t:  # Press 'T' to restart the game
                 print("Game Restarting...")
                 reset_game()  # Reset the game state
-    if player_health > 90:
+    if player_health > min_health:
         score += 1
 
     # Get key presses for player movement
     key_presses()
+
+    game_over_text = font.render("Game Over! Score: " + str(score), True, BLACK)
+    restart_over_text = font.render("Restart in: " + str(restart_timer), True, BLACK)
+
 
     # Create the player rectangle
     player = pygame.Rect(player_x, player_y, 35, 35)
@@ -146,29 +163,11 @@ while running:
     # Remove blocks and bullets after processing
     for block1 in blocks_to_remove:
         blocks.remove(block1)
-        
-    if player_health <= 90:
+
+    if player_health <= min_health:
         spawn_enemies = False
         blocks.clear()
         player_speed = 0
-        game_over_text = font.render("Game Over!", True, BLACK)
+        restart_timer -= 1
         window.blit(game_over_text, (WIDTH / 2 - game_over_text.get_width() / 2, HEIGHT / 2))
-        pygame.time.delay(2000)
-        reset_game()
-        
-
-    # Draw health bar
-    draw_health_bar(window, 10, 10, 200, 20, player_health, player_max_health)
-
-    enemy_spawner()
-
-    # Display the score
-    score_text = font.render(str(score), True, BLACK)
-    window.blit(score_text, (100, 100))
-
-    # Update the display
-    pygame.display.flip()
-
-# Quit Pygame
-pygame.quit()
-sys.exit()
+        window.blit(restart_over_text, (WIDTH / 2 - restart_over_text.get_width() /
